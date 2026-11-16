@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Monthly Expense Tracker</title>
+    <title>Monthly Expense Tracker</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
@@ -25,7 +25,6 @@
         }
     </script>
     <style>
-        /* Clean light-mode scrollbar and input styling */
         body {
             background-color: #F8FAFC;
             color: #0F172A;
@@ -44,17 +43,22 @@
             border: 1px solid #E2E8F0;
             box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
         }
-        .touch-target {
-            min-height: 42px;
+        /* Smooth iOS switch style */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0d9488;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0d9488;
         }
     </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-indigo-100 selection:text-indigo-900 pb-14">
+<body class="min-h-screen antialiased selection:bg-indigo-100 selection:text-indigo-900 pb-16">
 
 <!-- Toast Notification Banner -->
 <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- Custom Confirmation Modal (No native confirm()) -->
+<!-- Custom Confirmation Modal -->
 <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-6 shadow-xl">
         <div class="flex items-center gap-3 mb-2">
@@ -80,7 +84,6 @@
 <!-- Sticky Light Header -->
 <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-        <!-- Brand & Title -->
         <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
                 <i data-lucide="wallet" class="w-5 h-5"></i>
@@ -107,13 +110,13 @@
         <!-- Utility Buttons -->
         <div class="flex items-center gap-2 order-2 sm:order-3">
             <button id="clear-sample-btn" class="hidden px-3 py-2 rounded-xl text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">
-                Clear Sample Data
+                Clear Sample
             </button>
-            <button id="export-csv-btn" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5" title="Export Month to CSV">
+            <button id="export-csv-btn" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5" title="Export CSV">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>CSV</span>
             </button>
-            <button id="reset-month-btn" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition flex items-center gap-1.5" title="Reset Current Month to $0">
+            <button id="reset-month-btn" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition flex items-center gap-1.5" title="Reset Month">
                 <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Reset</span>
             </button>
@@ -126,7 +129,6 @@
 
     <!-- 1. Top Budget & Remaining Amount Hero Section -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Monthly Income Input Card -->
         <div class="lg:col-span-4 card-surface rounded-2xl p-5 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between">
@@ -165,18 +167,18 @@
                     </p>
                 </div>
 
-                <!-- Mini Category Summary Pills on Desktop / Tablet -->
+                <!-- Mini Category Summary Pills -->
                 <div class="grid grid-cols-3 gap-2 sm:gap-2.5 text-left bg-white/80 p-3 rounded-xl border border-slate-200/70 shrink-0">
                     <div>
                         <span class="block text-[10px] font-semibold uppercase text-slate-400">Bills</span>
                         <span id="mini-bills-total" class="text-xs sm:text-sm font-bold text-slate-800">$0</span>
                     </div>
                     <div>
-                        <span class="block text-[10px] font-semibold uppercase text-slate-400">Food (Wk 1-5)</span>
+                        <span class="block text-[10px] font-semibold uppercase text-slate-400">Food (4 Wks)</span>
                         <span id="mini-food-total" class="text-xs sm:text-sm font-bold text-slate-800">$0</span>
                     </div>
                     <div>
-                        <span class="block text-[10px] font-semibold uppercase text-slate-400">Other 4</span>
+                        <span class="block text-[10px] font-semibold uppercase text-slate-400">Other</span>
                         <span id="mini-other-total" class="text-xs sm:text-sm font-bold text-slate-800">$0</span>
                     </div>
                 </div>
@@ -184,10 +186,8 @@
 
             <!-- Visual Allocation Stacked Bar -->
             <div class="mt-4">
-                <div class="w-full h-3 bg-white rounded-full overflow-hidden flex border border-slate-200/80 p-0.5 gap-0.5" id="stacked-allocation-bar">
-                    <!-- Dynamically filled segments -->
-                </div>
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[11px] text-slate-600">
+                <div class="w-full h-3 bg-white rounded-full overflow-hidden flex border border-slate-200/80 p-0.5 gap-0.5" id="stacked-allocation-bar"></div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[11px] text-slate-600">
                     <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Amazon</span>
                     <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500"></span>Gas</span>
                     <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Insurance</span>
@@ -200,17 +200,13 @@
         </div>
     </section>
 
-    <!-- 2. Standalone Core Categories: Amazon, Gas, Insurance -->
-    <section aria-label="Core Categories">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 px-0.5">Everyday & Fixed Categories</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="standalone-categories-grid">
-            <!-- Amazon, Gas, Insurance cards injected cleanly via JS -->
-        </div>
+    <!-- 2. Separate Dedicated Cards: Amazon, Gas, Insurance -->
+    <section aria-label="Core Categories" class="grid grid-cols-1 md:grid-cols-3 gap-4" id="standalone-categories-grid">
+        <!-- Rendered dynamically -->
     </section>
 
-    <!-- 3. Grouped Categories: Health (Haircut, Massage, Pedicure) & Bills (Entertainment, Electric, Phone, WiFi, Gym, Car Wash) -->
+    <!-- 3. Grouped Categories: Health & Monthly Bills -->
     <section aria-label="Health and Monthly Bills" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
         <!-- HEALTH CARD -->
         <div class="lg:col-span-5 card-surface rounded-2xl p-5 flex flex-col justify-between">
             <div>
@@ -229,14 +225,8 @@
                         <span id="health-subtotal" class="text-lg font-extrabold text-rose-600">$0.00</span>
                     </div>
                 </div>
-
-                <!-- Health Line Items List -->
-                <div id="health-items-list" class="mt-3 space-y-2.5">
-                    <!-- Rendered dynamically -->
-                </div>
+                <div id="health-items-list" class="mt-3 space-y-2.5"></div>
             </div>
-
-            <!-- Add Custom Health Item -->
             <form id="add-health-form" class="mt-4 pt-3 border-t border-slate-100 flex gap-2">
                 <input type="text" id="new-health-name" placeholder="Add health item (e.g., Dentist)" required
                        class="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500">
@@ -246,7 +236,7 @@
             </form>
         </div>
 
-        <!-- BILLS CARD -->
+        <!-- MONTHLY BILLS CARD -->
         <div class="lg:col-span-7 card-surface rounded-2xl p-5 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -256,7 +246,7 @@
                         </div>
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Monthly Bills</h2>
-                            <p class="text-xs text-slate-500">Entertainment, Electric, Phone, WiFi, Gym, Car Wash</p>
+                            <p class="text-xs text-slate-500">Entertainment, Electric, Phone, WiFi, Gym, Car Wash, Uber Eats</p>
                         </div>
                     </div>
                     <div class="text-right">
@@ -264,14 +254,8 @@
                         <span id="bills-subtotal" class="text-lg font-extrabold text-violet-600">$0.00</span>
                     </div>
                 </div>
-
-                <!-- Bills Grid (2 columns on tablet/laptop, 1 column on mobile) -->
-                <div id="bills-items-list" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <!-- Rendered dynamically -->
-                </div>
+                <div id="bills-items-list" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
             </div>
-
-            <!-- Add Custom Bill Item -->
             <form id="add-bill-form" class="mt-4 pt-3 border-t border-slate-100 flex gap-2">
                 <input type="text" id="new-bill-name" placeholder="Add custom bill (e.g., Water, Netflix)" required
                        class="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500">
@@ -282,7 +266,7 @@
         </div>
     </section>
 
-    <!-- 4. Weekly Food Section (Weeks 1 to 5) -->
+    <!-- 4. 4-Week Food Tracker Section -->
     <section aria-label="Weekly Food Tracker" class="card-surface rounded-2xl p-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
             <div class="flex items-center gap-2.5">
@@ -290,23 +274,23 @@
                     <i data-lucide="utensils" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h2 class="text-base font-bold text-slate-900">Weekly Food Tracker</h2>
-                    <p class="text-xs text-slate-500">Track groceries & dining week-by-week (Weeks 1 – 5)</p>
+                    <h2 class="text-base font-bold text-slate-900">4-Week Food Tracker</h2>
+                    <p class="text-xs text-slate-500">Toggle "Week Over" to roll unspent weekly funds back to your remaining balance</p>
                 </div>
             </div>
             <div class="flex items-center justify-between sm:justify-end gap-4 bg-teal-50/70 px-3.5 py-2 rounded-xl border border-teal-100">
-                <span class="text-xs font-semibold text-teal-800">Monthly Food Total:</span>
+                <span class="text-xs font-semibold text-teal-800">Total Food Spent:</span>
                 <span id="food-monthly-total" class="text-lg font-extrabold text-teal-700">$0.00</span>
             </div>
         </div>
 
-        <!-- 5 Weeks Responsive Grid -->
-        <div id="weekly-food-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            <!-- Week 1 to Week 5 Cards populated via JS -->
+        <!-- 4 Weeks Grid -->
+        <div id="weekly-food-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Rendered dynamically -->
         </div>
     </section>
 
-    <!-- 5. Bottom Remaining Summary Bar (Convenient after scrolling on mobile) -->
+    <!-- 5. Bottom Remaining Summary Bar -->
     <section class="card-surface rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900 text-white border-slate-800">
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <div class="p-2.5 rounded-xl bg-white/10 text-emerald-400">
@@ -326,23 +310,13 @@
 </main>
 
 <script>
-    /**
-     * Monthly Expense Tracker ("My Way")
-     * Clean light-mode mobile-first & desktop-responsive expense tracker.
-     * Persists per-month records automatically in localStorage.
-     */
-
-    const STORAGE_PREFIX = 'my_expense_tracker_v2_';
+    const STORAGE_PREFIX = 'monthly_expense_tracker_v3_';
     const $ = (id) => document.getElementById(id);
 
-    // Current Active Month (defaults to November 2026 per current context, navigable)
     let activeYear = 2026;
-    let activeMonth = 10; // 0-indexed: 10 = November
-
-    // Current Month Data Model
+    let activeMonth = 10; // November
     let monthData = null;
 
-    // Format USD currency cleanly
     function fmtMoney(val) {
         const num = Number(val) || 0;
         return new Intl.NumberFormat('en-US', {
@@ -362,18 +336,15 @@
         }).format(num);
     }
 
-    // Get Month Storage Key (e.g. "2026-11")
     function getMonthKey(year, monthIndex) {
         return `${STORAGE_PREFIX}${year}-${String(monthIndex + 1).padStart(2, '0')}`;
     }
 
-    // Format Month Label (e.g. "November 2026")
     function getMonthDisplayLabel(year, monthIndex) {
         const date = new Date(year, monthIndex, 1);
         return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
 
-    // Create Sample Data for First-Time Users so layout is immediately intuitive
     function createSampleMonthData() {
         return {
             isSample: true,
@@ -387,8 +358,11 @@
                     { id: 'gas-1', note: 'Shell full tank', amount: 46.20 },
                     { id: 'gas-2', note: 'Chevron fill-up', amount: 44.80 }
                 ],
-                insurance: [
-                    { id: 'ins-1', note: 'Auto & Renters Policy', amount: 165.00 }
+                carInsurance: [
+                    { id: 'cins-1', note: 'Monthly auto premium', amount: 120.00 }
+                ],
+                rentersInsurance: [
+                    { id: 'rins-1', note: 'Apartment coverage', amount: 25.00 }
                 ]
             },
             health: [
@@ -402,19 +376,18 @@
                 { id: 'bill-phone', name: 'Phone Bill', amount: 65.00, paid: true, preset: true },
                 { id: 'bill-wifi', name: 'WiFi', amount: 70.00, paid: true, preset: true },
                 { id: 'bill-gym', name: 'Gym', amount: 49.99, paid: true, preset: true },
-                { id: 'bill-carwash', name: 'Car Wash', amount: 25.00, paid: false, preset: true }
+                { id: 'bill-carwash', name: 'Car Wash', amount: 25.00, paid: false, preset: true },
+                { id: 'bill-ubereats', name: 'Uber Eats', amount: 55.00, paid: true, preset: true }
             ],
             foodWeeks: [
-                { week: 1, entries: [{ id: 'fw1-1', note: 'Weekly Groceries', amount: 125.00 }, { id: 'fw1-2', note: 'Lunch takeout', amount: 24.50 }] },
-                { week: 2, entries: [{ id: 'fw2-1', note: 'HEB / Trader Joes', amount: 138.00 }] },
-                { week: 3, entries: [{ id: 'fw3-1', note: 'Groceries & Coffee', amount: 112.00 }] },
-                { week: 4, entries: [{ id: 'fw4-1', note: 'Groceries', amount: 95.00 }] },
-                { week: 5, entries: [] }
+                { week: 1, cap: 150, isOver: true, entries: [{ id: 'fw1-1', note: 'Groceries', amount: 115.00 }] },
+                { week: 2, cap: 150, isOver: false, entries: [{ id: 'fw2-1', note: 'Trader Joes', amount: 130.00 }] },
+                { week: 3, cap: 150, isOver: false, entries: [{ id: 'fw3-1', note: 'Weekly Groceries', amount: 105.00 }] },
+                { week: 4, cap: 150, isOver: false, entries: [{ id: 'fw4-1', note: 'Groceries & Dining', amount: 120.00 }] }
             ]
         };
     }
 
-    // Create Clean Blank ($0) Month Data
     function createBlankMonthData(carryIncome = 0) {
         return {
             isSample: false,
@@ -422,7 +395,8 @@
             standalone: {
                 amazon: [],
                 gas: [],
-                insurance: []
+                carInsurance: [],
+                rentersInsurance: []
             },
             health: [
                 { id: 'hlth-haircut', name: 'Haircut', amount: 0, preset: true },
@@ -435,27 +409,34 @@
                 { id: 'bill-phone', name: 'Phone Bill', amount: 0, paid: false, preset: true },
                 { id: 'bill-wifi', name: 'WiFi', amount: 0, paid: false, preset: true },
                 { id: 'bill-gym', name: 'Gym', amount: 0, paid: false, preset: true },
-                { id: 'bill-carwash', name: 'Car Wash', amount: 0, paid: false, preset: true }
+                { id: 'bill-carwash', name: 'Car Wash', amount: 0, paid: false, preset: true },
+                { id: 'bill-ubereats', name: 'Uber Eats', amount: 0, paid: false, preset: true }
             ],
             foodWeeks: [
-                { week: 1, entries: [] },
-                { week: 2, entries: [] },
-                { week: 3, entries: [] },
-                { week: 4, entries: [] },
-                { week: 5, entries: [] }
+                { week: 1, cap: 150, isOver: false, entries: [] },
+                { week: 2, cap: 150, isOver: false, entries: [] },
+                { week: 3, cap: 150, isOver: false, entries: [] },
+                { week: 4, cap: 150, isOver: false, entries: [] }
             ]
         };
     }
 
-    // Load Month Data from localStorage
     function loadMonthData(year, monthIndex) {
         const key = getMonthKey(year, monthIndex);
         try {
             const saved = localStorage.getItem(key);
             if (saved) {
                 monthData = JSON.parse(saved);
+                // Ensure foodWeeks always has 4 weeks in v3
+                if (!monthData.foodWeeks || monthData.foodWeeks.length !== 4) {
+                    monthData.foodWeeks = [
+                        { week: 1, cap: 150, isOver: false, entries: [] },
+                        { week: 2, cap: 150, isOver: false, entries: [] },
+                        { week: 3, cap: 150, isOver: false, entries: [] },
+                        { week: 4, cap: 150, isOver: false, entries: [] }
+                    ];
+                }
             } else {
-                // Only populate sample data on initial load of Nov 2026 if nothing exists yet
                 const hasAnySaved = Object.keys(localStorage).some(k => k.startsWith(STORAGE_PREFIX));
                 if (!hasAnySaved && year === 2026 && monthIndex === 10) {
                     monthData = createSampleMonthData();
@@ -471,7 +452,6 @@
         }
     }
 
-    // Save Current Month Data to localStorage
     function saveMonthData() {
         const key = getMonthKey(activeYear, activeMonth);
         try {
@@ -481,7 +461,6 @@
         }
     }
 
-    // Toast Feedback
     function showToast(msg) {
         const container = $('toast-container');
         const toast = document.createElement('div');
@@ -489,17 +468,13 @@
         toast.textContent = msg;
         container.appendChild(toast);
 
-        requestAnimationFrame(() => {
-            toast.classList.remove('opacity-0', 'translate-y-2');
-        });
-
+        requestAnimationFrame(() => toast.classList.remove('opacity-0', 'translate-y-2'));
         setTimeout(() => {
             toast.classList.add('opacity-0', 'translate-y-2');
             setTimeout(() => toast.remove(), 220);
         }, 2400);
     }
 
-    // Confirmation Modal Helper
     function openConfirmModal(title, message, onConfirm) {
         const modal = $('confirm-modal');
         $('modal-title').textContent = title;
@@ -521,20 +496,40 @@
         };
     }
 
-    // Calculate All Subtotals & Remaining Amount
     function calculateTotals() {
         const amazonTotal = monthData.standalone.amazon.reduce((s, x) => s + (Number(x.amount) || 0), 0);
         const gasTotal = monthData.standalone.gas.reduce((s, x) => s + (Number(x.amount) || 0), 0);
-        const insuranceTotal = monthData.standalone.insurance.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const carInsTotal = monthData.standalone.carInsurance.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const rentersInsTotal = monthData.standalone.rentersInsurance.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const insuranceTotal = carInsTotal + rentersInsTotal;
         const healthTotal = monthData.health.reduce((s, x) => s + (Number(x.amount) || 0), 0);
         const billsTotal = monthData.bills.reduce((s, x) => s + (Number(x.amount) || 0), 0);
 
-        const weekTotals = monthData.foodWeeks.map(w =>
-                                                       w.entries.reduce((s, e) => s + (Number(e.amount) || 0), 0)
-        );
-        const foodTotal = weekTotals.reduce((s, v) => s + v, 0);
+        // Food Tracker Calculation:
+        // For each week:
+        // Spent = sum of week entries.
+        // Cap = weekly budget cap.
+        // If isOver is true: contributed to spent is actual spent. Unspent (Cap - Spent if Cap > Spent) is rolled back (subtracted from spent total).
+        // If isOver is false: contributed to spent is Cap (or actual spent if no cap/exceeded).
+        let foodTotal = 0;
+        let totalRollback = 0;
 
-        const totalSpent = amazonTotal + gasTotal + insuranceTotal + healthTotal + billsTotal + foodTotal;
+        monthData.foodWeeks.forEach(w => {
+            const spent = w.entries.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+            const cap = Number(w.cap) || 150;
+
+            if (w.isOver) {
+                foodTotal += spent;
+                if (cap > spent) {
+                    totalRollback += (cap - spent);
+                }
+            } else {
+                // Active week holds the cap or spent (whichever is greater or standard cap allocation)
+                foodTotal += Math.max(spent, cap);
+            }
+        });
+
+        const totalSpent = amazonTotal + gasTotal + insuranceTotal + healthTotal + billsTotal + foodTotal - totalRollback;
         const income = Number(monthData.income) || 0;
         const remaining = income - totalSpent;
 
@@ -542,31 +537,30 @@
             income,
             amazonTotal,
             gasTotal,
+            carInsTotal,
+            rentersInsTotal,
             insuranceTotal,
             healthTotal,
             billsTotal,
-            weekTotals,
             foodTotal,
+            totalRollback,
             totalSpent,
             remaining
         };
     }
 
-    // Update Top & Bottom Summary & Allocation Bar
     function updateSummaryUI() {
         const t = calculateTotals();
 
         $('current-month-label').textContent = getMonthDisplayLabel(activeYear, activeMonth);
         $('monthly-income-input').value = t.income > 0 ? t.income : '';
 
-        // Sample data banner toggle
         if (monthData.isSample) {
             $('clear-sample-btn').classList.remove('hidden');
         } else {
             $('clear-sample-btn').classList.add('hidden');
         }
 
-        // Spent & Remaining Displays
         $('header-total-spent').textContent = fmtMoney(t.totalSpent);
         const pctUsed = t.income > 0 ? Math.round((t.totalSpent / t.income) * 100) : 0;
         $('header-spent-pct').textContent = `${pctUsed}% used`;
@@ -576,27 +570,22 @@
         $('footer-spent').textContent = fmtShortMoney(t.totalSpent);
         $('footer-remaining-amount').textContent = fmtMoney(t.remaining);
 
-        // Mini category quick pills
         $('mini-bills-total').textContent = fmtShortMoney(t.billsTotal);
         $('mini-food-total').textContent = fmtShortMoney(t.foodTotal);
         $('mini-other-total').textContent = fmtShortMoney(t.amazonTotal + t.gasTotal + t.insuranceTotal + t.healthTotal);
 
-        // Subtotals
         $('health-subtotal').textContent = fmtMoney(t.healthTotal);
         $('bills-subtotal').textContent = fmtMoney(t.billsTotal);
         $('food-monthly-total').textContent = fmtMoney(t.foodTotal);
 
-        // Dynamic Hero Card Coloring based on Remaining Amount Health
         const heroCard = $('remaining-hero-card');
         const badge = $('remaining-badge');
         const remText = $('remaining-amount-display');
         const subText = $('remaining-subtext');
         const footerRem = $('footer-remaining-amount');
-
         const pctLeft = t.income > 0 ? ((t.remaining / t.income) * 100) : (t.remaining >= 0 ? 100 : -1);
 
         if (t.remaining < 0) {
-            // Over Budget (Red)
             heroCard.className = 'lg:col-span-8 rounded-2xl p-5 sm:p-6 border transition-colors duration-200 bg-rose-50/80 border-rose-200';
             badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800';
             badge.innerHTML = `<i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Over Budget`;
@@ -604,7 +593,6 @@
             footerRem.className = 'text-2xl font-extrabold text-rose-400';
             subText.textContent = `You have exceeded your monthly budget by ${fmtMoney(Math.abs(t.remaining))}.`;
         } else if (t.income > 0 && pctLeft < 20) {
-            // Low Buffer (<20% Amber)
             heroCard.className = 'lg:col-span-8 rounded-2xl p-5 sm:p-6 border transition-colors duration-200 bg-amber-50/80 border-amber-200';
             badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800';
             badge.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Low Buffer`;
@@ -612,7 +600,6 @@
             footerRem.className = 'text-2xl font-extrabold text-amber-400';
             subText.textContent = `${pctLeft.toFixed(0)}% of your monthly budget remaining.`;
         } else {
-            // Healthy (Emerald Green)
             heroCard.className = 'lg:col-span-8 rounded-2xl p-5 sm:p-6 border transition-colors duration-200 bg-emerald-50/70 border-emerald-200';
             badge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800';
             badge.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Healthy Balance`;
@@ -623,7 +610,6 @@
                                   : `Enter your Monthly Income on the left to track your remaining balance.`;
         }
 
-        // Stacked Visual Allocation Bar
         const bar = $('stacked-allocation-bar');
         const denom = Math.max(t.income, t.totalSpent, 1);
         const segments = [
@@ -647,126 +633,210 @@
         lucide.createIcons();
     }
 
-    // Render Standalone Categories: Amazon, Gas, Insurance
+    // Render Standalone Cards: Amazon, Gas, Insurance (Car & Renters)
     function renderStandaloneCategories() {
         const grid = $('standalone-categories-grid');
-        const configs = [
-            {
-                key: 'amazon',
-                title: 'Amazon',
-                subtitle: 'Orders & household items',
-                icon: 'package',
-                badgeBg: 'bg-amber-50 text-amber-600',
-                totalColor: 'text-amber-600',
-                ringColor: 'focus:ring-amber-500',
-                btnBg: 'bg-amber-500 hover:bg-amber-600 text-white',
-                placeholder: 'Item note (optional)'
-            },
-            {
-                key: 'gas',
-                title: 'Gas',
-                subtitle: 'Fuel & station fill-ups',
-                icon: 'fuel',
-                badgeBg: 'bg-sky-50 text-sky-600',
-                totalColor: 'text-sky-600',
-                ringColor: 'focus:ring-sky-500',
-                btnBg: 'bg-sky-600 hover:bg-sky-700 text-white',
-                placeholder: 'Station / note'
-            },
-            {
-                key: 'insurance',
-                title: 'Insurance',
-                subtitle: 'Auto, home, or renters',
-                icon: 'shield-check',
-                badgeBg: 'bg-indigo-50 text-indigo-600',
-                totalColor: 'text-indigo-600',
-                ringColor: 'focus:ring-indigo-500',
-                btnBg: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-                placeholder: 'Policy note'
-            }
-        ];
-
         grid.innerHTML = '';
 
-        configs.forEach(cfg => {
-            const items = monthData.standalone[cfg.key] || [];
-            const subtotal = items.reduce((s, x) => s + (Number(x.amount) || 0), 0);
-
-            const card = document.createElement('div');
-            card.className = 'card-surface rounded-2xl p-5 flex flex-col justify-between';
-
-            const itemsHtml = items.length === 0
-                              ? `<p class="text-xs text-slate-400 py-3 text-center bg-slate-50/70 rounded-xl border border-dashed border-slate-200">No ${cfg.title} entries yet</p>`
-                              : `<ul class="space-y-2 max-h-44 overflow-y-auto pr-0.5">
-                        ${items.map(item => `
-                            <li class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs sm:text-sm">
-                                <span class="text-slate-700 truncate font-medium">${escapeHtml(item.note || cfg.title)}</span>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="font-bold text-slate-900">${fmtMoney(item.amount)}</span>
-                                    <button type="button" data-del-standalone="${cfg.key}" data-id="${item.id}" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg transition" title="Remove">
-                                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                                    </button>
-                                </div>
-                            </li>
-                        `).join('')}
-                       </ul>`;
-
-            card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-9 h-9 rounded-xl ${cfg.badgeBg} flex items-center justify-center shrink-0">
-                                    <i data-lucide="${cfg.icon}" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-slate-900">${cfg.title}</h3>
-                                    <p class="text-[11px] text-slate-500">${cfg.subtitle}</p>
-                                </div>
+        // 1. Amazon Card
+        const amzItems = monthData.standalone.amazon || [];
+        const amzTotal = amzItems.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const amzCard = document.createElement('div');
+        amzCard.className = 'card-surface rounded-2xl p-5 flex flex-col justify-between';
+        amzCard.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="package" class="w-5 h-5"></i>
                             </div>
-                            <span class="text-lg font-extrabold ${cfg.totalColor}">${fmtMoney(subtotal)}</span>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Amazon</h3>
+                                <p class="text-[11px] text-slate-500">Orders & household items</p>
+                            </div>
                         </div>
+                        <span class="text-lg font-extrabold text-amber-600">${fmtMoney(amzTotal)}</span>
+                    </div>
+                    <div class="mt-3">
+                        ${amzItems.length === 0
+                          ? '<p class="text-xs text-slate-400 py-3 text-center bg-slate-50/70 rounded-xl border border-dashed border-slate-200">No Amazon items yet</p>'
+                          : `<ul class="space-y-2 max-h-44 overflow-y-auto pr-0.5">
+                                ${amzItems.map(item => `
+                                    <li class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs sm:text-sm">
+                                        <span class="text-slate-700 truncate font-medium">${escapeHtml(item.note || 'Amazon order')}</span>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="font-bold text-slate-900">${fmtMoney(item.amount)}</span>
+                                            <button type="button" data-del-standalone="amazon" data-id="${item.id}" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                               </ul>`
+        }
+                    </div>
+                </div>
+                <form data-standalone-form="amazon" class="mt-3.5 pt-3 border-t border-slate-100 flex gap-2">
+                    <input type="text" name="note" placeholder="Item note (optional)" class="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <div class="relative w-24 shrink-0">
+                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                        <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="w-full pl-6 pr-2 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <button type="submit" class="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white transition shrink-0">Add</button>
+                </form>
+            `;
+        grid.appendChild(amzCard);
 
-                        <div class="mt-3">
-                            ${itemsHtml}
+        // 2. Gas Card
+        const gasItems = monthData.standalone.gas || [];
+        const gasTotal = gasItems.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const gasCard = document.createElement('div');
+        gasCard.className = 'card-surface rounded-2xl p-5 flex flex-col justify-between';
+        gasCard.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="fuel" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Gas</h3>
+                                <p class="text-[11px] text-slate-500">Fuel & station fill-ups</p>
+                            </div>
                         </div>
+                        <span class="text-lg font-extrabold text-sky-600">${fmtMoney(gasTotal)}</span>
+                    </div>
+                    <div class="mt-3">
+                        ${gasItems.length === 0
+                          ? '<p class="text-xs text-slate-400 py-3 text-center bg-slate-50/70 rounded-xl border border-dashed border-slate-200">No gas fill-ups yet</p>'
+                          : `<ul class="space-y-2 max-h-44 overflow-y-auto pr-0.5">
+                                ${gasItems.map(item => `
+                                    <li class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs sm:text-sm">
+                                        <span class="text-slate-700 truncate font-medium">${escapeHtml(item.note || 'Gas station')}</span>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="font-bold text-slate-900">${fmtMoney(item.amount)}</span>
+                                            <button type="button" data-del-standalone="gas" data-id="${item.id}" class="p-1 text-slate-400 hover:text-rose-600 rounded-lg transition"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                               </ul>`
+        }
+                    </div>
+                </div>
+                <form data-standalone-form="gas" class="mt-3.5 pt-3 border-t border-slate-100 flex gap-2">
+                    <input type="text" name="note" placeholder="Station / note" class="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <div class="relative w-24 shrink-0">
+                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                        <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="w-full pl-6 pr-2 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                    <button type="submit" class="px-3 py-2 rounded-xl text-xs font-semibold bg-sky-600 hover:bg-sky-700 text-white transition shrink-0">Add</button>
+                </form>
+            `;
+        grid.appendChild(gasCard);
+
+        // 3. Insurance Card (Car Insurance & Renters Insurance Split)
+        const carIns = monthData.standalone.carInsurance || [];
+        const rentersIns = monthData.standalone.rentersInsurance || [];
+        const carInsTot = carIns.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const rentersInsTot = rentersIns.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+        const totalIns = carInsTot + rentersInsTot;
+
+        const insCard = document.createElement('div');
+        insCard.className = 'card-surface rounded-2xl p-5 flex flex-col justify-between';
+        insCard.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Insurance</h3>
+                                <p class="text-[11px] text-slate-500">Car & Renters policies</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-extrabold text-indigo-600">${fmtMoney(totalIns)}</span>
                     </div>
 
-                    <form data-standalone-form="${cfg.key}" class="mt-3.5 pt-3 border-t border-slate-100 flex gap-2">
-                        <input type="text" name="note" placeholder="${cfg.placeholder}"
-                            class="flex-1 min-w-0 px-3 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 ${cfg.ringColor}">
-                        <div class="relative w-24 shrink-0">
-                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
-                            <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required
-                                class="w-full pl-6 pr-2 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 ${cfg.ringColor}">
+                    <!-- Insurance Subsections -->
+                    <div class="mt-3 space-y-3">
+                        <!-- Car Insurance -->
+                        <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i data-lucide="car" class="w-3.5 h-3.5 text-indigo-600"></i> Car Insurance
+                                </span>
+                                <span class="text-xs font-extrabold text-indigo-700">${fmtMoney(carInsTot)}</span>
+                            </div>
+                            ${carIns.length === 0 ? '<p class="text-[11px] text-slate-400 mb-1.5">No car insurance entries</p>' :
+                              `<ul class="space-y-1 mb-2">
+                                    ${carIns.map(i => `
+                                        <li class="flex items-center justify-between text-xs bg-white px-2 py-1 rounded-lg border border-slate-200">
+                                            <span class="truncate text-slate-700">${escapeHtml(i.note || 'Car Policy')}</span>
+                                            <div class="flex items-center gap-1.5 shrink-0 font-bold">
+                                                <span>${fmtMoney(i.amount)}</span>
+                                                <button type="button" data-del-standalone="carInsurance" data-id="${i.id}" class="text-slate-400 hover:text-rose-600"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                 </ul>`
+        }
+                            <form data-standalone-form="carInsurance" class="flex gap-1.5">
+                                <input type="text" name="note" placeholder="Policy note" class="flex-1 px-2 py-1 text-[11px] rounded-lg bg-white border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="w-20 px-2 py-1 text-[11px] font-semibold rounded-lg bg-white border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <button type="submit" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-semibold">+ Add</button>
+                            </form>
                         </div>
-                        <button type="submit" class="px-3 py-2 rounded-xl text-xs font-semibold ${cfg.btnBg} transition shrink-0">
-                            Add
-                        </button>
-                    </form>
-                `;
 
-            grid.appendChild(card);
-        });
+                        <!-- Renters Insurance -->
+                        <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i data-lucide="home" class="w-3.5 h-3.5 text-indigo-600"></i> Renters Insurance
+                                </span>
+                                <span class="text-xs font-extrabold text-indigo-700">${fmtMoney(rentersInsTot)}</span>
+                            </div>
+                            ${rentersIns.length === 0 ? '<p class="text-[11px] text-slate-400 mb-1.5">No renters insurance entries</p>' :
+                              `<ul class="space-y-1 mb-2">
+                                    ${rentersIns.map(i => `
+                                        <li class="flex items-center justify-between text-xs bg-white px-2 py-1 rounded-lg border border-slate-200">
+                                            <span class="truncate text-slate-700">${escapeHtml(i.note || 'Renters Policy')}</span>
+                                            <div class="flex items-center gap-1.5 shrink-0 font-bold">
+                                                <span>${fmtMoney(i.amount)}</span>
+                                                <button type="button" data-del-standalone="rentersInsurance" data-id="${i.id}" class="text-slate-400 hover:text-rose-600"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                 </ul>`
+        }
+                            <form data-standalone-form="rentersInsurance" class="flex gap-1.5">
+                                <input type="text" name="note" placeholder="Policy note" class="flex-1 px-2 py-1 text-[11px] rounded-lg bg-white border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="w-20 px-2 py-1 text-[11px] font-semibold rounded-lg bg-white border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                <button type="submit" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-semibold">+ Add</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        grid.appendChild(insCard);
 
-        // Attach form submit & delete listeners
+        // Bind standalone item deletion and addition
         grid.querySelectorAll('form[data-standalone-form]').forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const key = form.getAttribute('data-standalone-form');
-                const noteInput = form.querySelector('input[name="note"]');
-                const amtInput = form.querySelector('input[name="amount"]');
-                const amount = parseFloat(amtInput.value);
+                const noteInp = form.querySelector('input[name="note"]');
+                const amtInp = form.querySelector('input[name="amount"]');
+                const amount = parseFloat(amtInp.value);
                 if (isNaN(amount) || amount <= 0) return;
 
                 monthData.isSample = false;
                 monthData.standalone[key].push({
                                                    id: `${key}-${Date.now()}`,
-                                                   note: noteInput.value.trim(),
+                                                   note: noteInp.value.trim(),
                                                    amount: amount
                                                });
                 saveMonthData();
                 renderAll();
-                showToast(`Added ${fmtMoney(amount)} to ${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                showToast(`Added ${fmtMoney(amount)} to Insurance`);
             });
         });
 
@@ -782,7 +852,7 @@
         });
     }
 
-    // Render Health Section (Haircut, Massage, Pedicure + custom)
+    // Render Health Section
     function renderHealthSection() {
         const list = $('health-items-list');
         list.innerHTML = '';
@@ -790,7 +860,6 @@
         monthData.health.forEach(item => {
             const row = document.createElement('div');
             row.className = 'flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/70';
-
             row.innerHTML = `
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
@@ -813,7 +882,6 @@
             list.appendChild(row);
         });
 
-        // Live input updates
         list.querySelectorAll('input[data-health-id]').forEach(inp => {
             inp.addEventListener('input', () => {
                 const id = inp.getAttribute('data-health-id');
@@ -837,7 +905,7 @@
         });
     }
 
-    // Render Bills Section (Entertainment, Electric, Phone Bill, WiFi, Gym, Car Wash + custom)
+    // Render Monthly Bills Section (Including Uber Eats)
     function renderBillsSection() {
         const list = $('bills-items-list');
         list.innerHTML = '';
@@ -880,7 +948,6 @@
             list.appendChild(card);
         });
 
-        // Input updates
         list.querySelectorAll('input[data-bill-id]').forEach(inp => {
             inp.addEventListener('input', () => {
                 const id = inp.getAttribute('data-bill-id');
@@ -894,7 +961,6 @@
             });
         });
 
-        // Toggle Paid Status
         list.querySelectorAll('button[data-toggle-bill]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-toggle-bill');
@@ -909,7 +975,6 @@
             });
         });
 
-        // Delete custom bill
         list.querySelectorAll('button[data-del-bill]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-del-bill');
@@ -920,20 +985,26 @@
         });
     }
 
-    // Render Weekly Food Section (Weeks 1 - 5)
+    // Render 4-Week Food Tracker with "Week Over" toggle
     function renderWeeklyFoodSection() {
         const grid = $('weekly-food-grid');
         grid.innerHTML = '';
 
         monthData.foodWeeks.forEach((wkObj, idx) => {
-            const wkTotal = wkObj.entries.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+            const spent = wkObj.entries.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+            const cap = Number(wkObj.cap) || 150;
+            const unspent = Math.max(0, cap - spent);
 
             const col = document.createElement('div');
-            col.className = 'rounded-xl bg-slate-50/90 border border-slate-200/80 p-3.5 flex flex-col justify-between';
+            col.className = `rounded-2xl border p-4 flex flex-col justify-between transition-all ${
+                wkObj.isOver
+                ? 'bg-teal-50/60 border-teal-200'
+                : 'bg-slate-50/90 border-slate-200/80'
+            }`;
 
             const entriesHtml = wkObj.entries.length === 0
-                                ? `<p class="text-[11px] text-slate-400 py-3 text-center">No food logs</p>`
-                                : `<ul class="space-y-1.5 my-2 max-h-36 overflow-y-auto">
+                                ? `<p class="text-[11px] text-slate-400 py-2.5 text-center">No food expenses yet</p>`
+                                : `<ul class="space-y-1.5 my-2 max-h-32 overflow-y-auto pr-0.5">
                         ${wkObj.entries.map(entry => `
                             <li class="flex items-center justify-between gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200/70 text-xs">
                                 <span class="text-slate-700 truncate">${escapeHtml(entry.note || 'Food')}</span>
@@ -949,14 +1020,45 @@
 
             col.innerHTML = `
                     <div>
-                        <div class="flex items-center justify-between pb-2 border-b border-slate-200/80">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Week ${wkObj.week}</span>
-                            <span class="text-sm font-extrabold text-teal-700">${fmtMoney(wkTotal)}</span>
+                        <!-- Header & Week Over Toggle -->
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 gap-2">
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 block">Week ${wkObj.week}</span>
+                                <span class="text-xs text-slate-500">Spent: <strong class="text-slate-900">${fmtMoney(spent)}</strong></span>
+                            </div>
+
+                            <!-- Toggle Switch for Week Over -->
+                            <div class="flex flex-col items-end">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" data-toggle-week-over="${idx}" ${wkObj.isOver ? 'checked' : ''} class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
+                                </label>
+                                <span class="text-[10px] font-bold ${wkObj.isOver ? 'text-teal-700' : 'text-slate-500'} mt-0.5 select-none">
+                                    ${wkObj.isOver ? 'Week Over' : 'Active'}
+                                </span>
+                            </div>
                         </div>
+
+                        <!-- Weekly Cap & Rollback Info -->
+                        <div class="mt-2.5 py-1.5 px-2.5 rounded-xl bg-white/80 border border-slate-200/60 flex items-center justify-between text-xs">
+                            <span class="text-slate-500 text-[11px]">Cap / Budget:</span>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[11px] text-slate-400">$</span>
+                                <input type="number" step="1" min="0" value="${cap}" data-week-cap="${idx}"
+                                    class="w-14 text-xs font-bold text-slate-800 bg-transparent text-right focus:outline-none border-b border-dashed border-slate-300">
+                            </div>
+                        </div>
+
+                        ${wkObj.isOver && unspent > 0 ? `
+                            <div class="mt-2 text-[11px] text-teal-700 bg-teal-100/60 px-2.5 py-1 rounded-lg font-medium flex items-center gap-1">
+                                <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5 text-teal-600"></i> Rolled back ${fmtMoney(unspent)} to balance
+                            </div>
+                        ` : ''}
+
                         ${entriesHtml}
                     </div>
 
-                    <form data-food-week-form="${idx}" class="mt-2 pt-2 border-t border-slate-200/70 space-y-1.5">
+                    <form data-food-week-form="${idx}" class="mt-2 pt-2.5 border-t border-slate-200/70 space-y-1.5">
                         <input type="text" name="note" placeholder="Groceries / Dining"
                             class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <div class="flex gap-1.5">
@@ -975,7 +1077,33 @@
             grid.appendChild(col);
         });
 
-        // Add food item to specific week
+        // Toggle Week Over Event
+        grid.querySelectorAll('input[data-toggle-week-over]').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                const wkIdx = Number(e.target.getAttribute('data-toggle-week-over'));
+                monthData.isSample = false;
+                monthData.foodWeeks[wkIdx].isOver = e.target.checked;
+                saveMonthData();
+                renderAll();
+                showToast(`Week ${wkIdx + 1} marked as ${e.target.checked ? 'Over (funds rolled back)' : 'Active'}`);
+            });
+        });
+
+        // Weekly Cap Input Event
+        grid.querySelectorAll('input[data-week-cap]').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                const wkIdx = Number(e.target.getAttribute('data-week-cap'));
+                const val = parseFloat(e.target.value);
+                if (!isNaN(val) && val >= 0) {
+                    monthData.isSample = false;
+                    monthData.foodWeeks[wkIdx].cap = val;
+                    saveMonthData();
+                    updateSummaryUI();
+                }
+            });
+        });
+
+        // Add Food Item to Week
         grid.querySelectorAll('form[data-food-week-form]').forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -993,11 +1121,11 @@
                                                         });
                 saveMonthData();
                 renderAll();
-                showToast(`Added ${fmtMoney(amount)} to Week ${wkIdx + 1} Food`);
+                showToast(`Added ${fmtMoney(amount)} to Week ${wkIdx + 1}`);
             });
         });
 
-        // Delete food item
+        // Delete Food Item
         grid.querySelectorAll('button[data-del-food-wk]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const wkIdx = Number(btn.getAttribute('data-del-food-wk'));
@@ -1010,7 +1138,6 @@
         });
     }
 
-    // Escape HTML helper to keep inputs safe
     function escapeHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;')
@@ -1019,7 +1146,6 @@
             .replace(/"/g, '&quot;');
     }
 
-    // Full Render Pass
     function renderAll() {
         renderStandaloneCategories();
         renderHealthSection();
@@ -1029,7 +1155,6 @@
         lucide.createIcons();
     }
 
-    // Export Current Month to CSV
     function exportMonthCSV() {
         const label = getMonthDisplayLabel(activeYear, activeMonth);
         const t = calculateTotals();
@@ -1040,7 +1165,8 @@
 
         monthData.standalone.amazon.forEach(i => rows.push([label, 'Amazon', i.note || 'Amazon', '-', i.amount.toFixed(2)]));
         monthData.standalone.gas.forEach(i => rows.push([label, 'Gas', i.note || 'Gas', '-', i.amount.toFixed(2)]));
-        monthData.standalone.insurance.forEach(i => rows.push([label, 'Insurance', i.note || 'Insurance', '-', i.amount.toFixed(2)]));
+        monthData.standalone.carInsurance.forEach(i => rows.push([label, 'Car Insurance', i.note || 'Car Insurance', '-', i.amount.toFixed(2)]));
+        monthData.standalone.rentersInsurance.forEach(i => rows.push([label, 'Renters Insurance', i.note || 'Renters Insurance', '-', i.amount.toFixed(2)]));
         monthData.health.forEach(h => {
             if (h.amount > 0) rows.push([label, 'Health', h.name, '-', h.amount.toFixed(2)]);
         });
@@ -1048,7 +1174,7 @@
             if (b.amount > 0) rows.push([label, 'Bills', b.name, b.paid ? 'Paid' : 'Unpaid', b.amount.toFixed(2)]);
         });
         monthData.foodWeeks.forEach(w => {
-            w.entries.forEach(e => rows.push([label, `Food (Week ${w.week})`, e.note, '-', e.amount.toFixed(2)]));
+            w.entries.forEach(e => rows.push([label, `Food (Week ${w.week})`, e.note, w.isOver ? 'Week Over' : 'Active', e.amount.toFixed(2)]));
         });
         rows.push([label, 'SUMMARY', 'Total Spent', '-', t.totalSpent.toFixed(2)]);
         rows.push([label, 'SUMMARY', 'Remaining Amount', '-', t.remaining.toFixed(2)]);
@@ -1064,9 +1190,7 @@
         showToast(`Exported ${label} CSV`);
     }
 
-    // Event Bindings
     function initEventListeners() {
-        // Monthly Income Live Input
         $('monthly-income-input').addEventListener('input', (e) => {
             monthData.isSample = false;
             monthData.income = Math.max(0, parseFloat(e.target.value) || 0);
@@ -1074,7 +1198,6 @@
             updateSummaryUI();
         });
 
-        // Month Navigation
         $('prev-month-btn').addEventListener('click', () => {
             activeMonth--;
             if (activeMonth < 0) {
@@ -1095,7 +1218,6 @@
             renderAll();
         });
 
-        // Add Custom Health Item
         $('add-health-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = $('new-health-name');
@@ -1115,7 +1237,6 @@
             showToast(`Added "${name}" to Health`);
         });
 
-        // Add Custom Bill Item
         $('add-bill-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = $('new-bill-name');
@@ -1133,18 +1254,16 @@
             input.value = '';
             saveMonthData();
             renderAll();
-            showToast(`Added "${name}" to Monthly Bills`);
+            showToast(`Added "${name}" to Bills`);
         });
 
-        // Clear Sample Data Button
         $('clear-sample-btn').addEventListener('click', () => {
             monthData = createBlankMonthData(0);
             saveMonthData();
             renderAll();
-            showToast('Sample data cleared — ready for your numbers!');
+            showToast('Sample data cleared');
         });
 
-        // Reset Month Button
         $('reset-month-btn').addEventListener('click', () => {
             const label = getMonthDisplayLabel(activeYear, activeMonth);
             openConfirmModal(
@@ -1159,11 +1278,9 @@
             );
         });
 
-        // Export CSV
         $('export-csv-btn').addEventListener('click', exportMonthCSV);
     }
 
-    // Boot Application
     window.addEventListener('DOMContentLoaded', () => {
         loadMonthData(activeYear, activeMonth);
         initEventListeners();
